@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-slalable=0">
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap" rel="stylesheet">
+
+</head>
+<body>
+	<div class="overlay"></div>
+	<div class="container-title">
+		<div class="chat-box">
+			<div class="chat-box__body">
+					<div class="chat-box__text text">
+						Привет! Добро пожаловать в пузырьковую сортировку
+					</div>
+					<div class="chat-box__buttons hide">
+						<div class="chat-box__auto text button" id="auto">
+							Автоматически
+						</div>
+						<div class="chat-box__manually text button" id="manually">
+							Вручную
+						</div>
+					</div>
+					<div action="" class="chat-box__array-form form hide">
+							<input placeholder="Введите числа" type="text" class="chat-box__array-input input text">
+							<button class="chat-box__array-submit button text" id="array-button">Принимай</button>
+					</div>
+					<div action="" class="chat-box__amount-form form hide">
+							<input placeholder="Введите число" type="text" class="chat-box__amount-input input text">
+							<button class="chat-box__amount-submit button text" id="amount-button">Принимай</button>
+					</div>
+			</div>
+		</div>
+		<div class="bubble">
+			<div class="bubble__body">
+				<img src="img/bubble.png" alt="Пузырик лопнул :(" class="bubble__image" ondragstart="return false">
+			</div>
+		</div>
+	</div>
+	<div class="container-array"></div>
+	<div class="bg"></div>
+<script src="js/main.js"></script>
+</body>
+</html>
