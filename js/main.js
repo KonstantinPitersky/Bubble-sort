@@ -1,4 +1,3 @@
-
 'use strict'
 
 class Chat {
@@ -78,7 +77,6 @@ class MainBubble {
 
 	//меняем эмоцию главного пузырька
 	changeEmotion(num) {
-		console.log(num);
 		this.node.children[0].src = `img/${this.arrEmotions[num]}.png`;
 	}
 
@@ -127,7 +125,7 @@ class MainBubble {
 	animateArray() {
 		if (animationQueue.length === 0) {
 			document.body.classList.remove('hide-overflow');
-			return console.log('done');
+			return;
 		}
 		window.scrollTo({
 				top: animationQueue[0][0].offsetTop - document.documentElement.clientHeight/2,
@@ -203,7 +201,8 @@ function handler() {
 		scene.overlayShowArray();
 		return;
 	};
-	if (event.target.id === "amount-button") {
+
+	if (event.target.id === "amount-button" ) {
 		titleChat.autoArray(titleBubble);
 	}
 	if (event.target.id === "array-button") {
@@ -232,7 +231,8 @@ function handler() {
 	}
 	titleChat.say(titleBubble);
 	titleBubble.changeEmotion(titleChat.num);
-	//выводим форму , если в массиве чата есть флажок с конкретной формной из HTML
+
+	//выводим форму , если в массиве чата есть флажок с конкретной формой из HTML
 	if (titleChat.arrPhrases[titleChat.num][1]) {
 		titleChat.node.children[titleChat.arrPhrases[titleChat.num][1]].classList.remove('hide');
 		return;
@@ -240,17 +240,17 @@ function handler() {
 	titleChat.num++;
 }
 
-let scene = new Scene('scene', document.querySelector('.bg'), document.querySelector('.overlay'))	//фон, оверлей и управление сценой
-let titleBubble = new MainBubble('titleBubble');													//главный титульный пузырек
-let titleChat = new Chat('titleChat');																//диалоговое окно главного пузырька
-let bubbles = [];																					//массив для формирования пузырей
-let animationQueue = [];																			//массив очереди смены пузырей для анимации
+const scene = new Scene('scene', document.querySelector('.bg'), document.querySelector('.overlay'))	//фон, оверлей и управление сценой
+const titleBubble = new MainBubble('titleBubble');													//главный титульный пузырек
+const titleChat = new Chat('titleChat');																//диалоговое окно главного пузырька
+const bubbles = [];																					//массив для формирования пузырей
+const animationQueue = [];																			//массив очереди смены пузырей для анимации
 titleBubble.node = document.querySelector('.bubble__body');
 titleChat.node = document.querySelector('.chat-box__body');
 titleChat.textNode = document.querySelector('.chat-box__text');
 
 //массив [фраза, эмоция, флаг наличия определенной кнопки по номеру ноды в html]
-let phrases = [
+const phrases = [
 	['Привет! Добро пожаловать в пузырьковую сортировку','hi', null],
 	['Желаете сгенерировать числа автоматически или ввести вручную?','question', 1],
 	['Вы точно правильно ввели массив? Попробуйте снова!','question', null],
@@ -276,4 +276,3 @@ setTimeout(() => {
 		document.addEventListener('click', handler);
 	}, 1000)
 }, 2000)
-
