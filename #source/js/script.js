@@ -1,4 +1,3 @@
-
 'use strict'
 
 class Chat {
@@ -277,4 +276,3 @@ setTimeout(() => {
 		document.addEventListener('click', handler);
 	}, 1000)
 }, 2000)
-
