@@ -8,7 +8,6 @@ class Chat {
 		this.arrPhrases = [];				//массив чата с [[сообщениями][флажками для появления формы к сообщению]]
 	}
 
-	//изменяем сообщение в чате
 	say() {
 		this.textNode.textContent = this.arrPhrases[this.num][0];
 	}
@@ -20,7 +19,6 @@ class Chat {
 		}
 	}
 
-	//прячем все формы для кнопок
 	hideAllForms() {
 		for (let child of this.node.children) {
 			if (child.classList.contains('text')) {
@@ -66,71 +64,73 @@ class MainBubble {
 		this.array = [];					//массив значений, созданный на основе данных полученных от пользователя
 	}
 
-	//добавляем эмоции из массива фраз в массив эмоций главного пузырька
 	addEmotions(items) {
 		for (let item of items) {
 			this.arrEmotions.push([item[1]]);
 		}
 	}
 
-	//меняем эмоцию главного пузырька
 	changeEmotion(num) {
 		this.node.children[0].src = `img/${this.arrEmotions[num]}.png`;
 	}
 
-	//создаем массив пузырей на основе полученных от пользователя данных
 	createArray() {
 		for (let i = 0; i < this.array.length; i++) {
-
 			let bubble = new Bubble(`bubble${i}`, this.array[i]);
 
-			let bubleContainer = document.createElement('div');
-			let img = document.createElement('img');
-			let text = document.createElement('div');
-			
-			document.querySelector('.container-array').append(bubleContainer);
-			bubleContainer.append(bubble.node);
-			bubble.node.append(img);
-			bubble.node.append(text);
-
-			bubleContainer.classList.add('bubbles-array');
-			bubble.node.classList.add('bubbles-array__body');
-
-			img.src = "img/bubble.png";
-			img.classList.add("bubbles-array__image");
-			img.alt = 'Пузырик лопнул :(';
-
-			text.classList.add('bubbles-array__text');
-			text.textContent = bubble.value;
+			this.visualizeBubble(bubble);
 
 			bubbles.push(bubble);
 		}
 	}
 
-	//сортируем массив значений и запоминаем смену пузырей для анимации
+	visualizeBubble(bubble) {
+		let bubleContainer = document.createElement('div');
+		let img = document.createElement('img');
+		let text = document.createElement('div');
+		
+		document.querySelector('.container-array').append(bubleContainer);
+		bubleContainer.append(bubble.node);
+		bubble.node.append(img);
+		bubble.node.append(text);
+
+		bubleContainer.classList.add('bubbles-array');
+		bubble.node.classList.add('bubbles-array__body');
+
+		img.src = "img/bubble.png";
+		img.classList.add("bubbles-array__image");
+		img.alt = 'Пузырик лопнул :(';
+
+		text.classList.add('bubbles-array__text');
+		text.textContent = bubble.value;
+	}
+
 	sortArray() {
 		for (let i = 0; i < bubbles.length - 1; i++) {
 			for (let j = 0; j < bubbles.length - 1 - i; j++) {
 				if (bubbles[j].value > bubbles[j+1].value) {
-					animationQueue.push([bubbles[j].node, bubbles[j+1].node]);
+					this.addToAnimationQueue(bubbles[j], bubbles[j+1]);
 					[bubbles[j].value, bubbles[j+1].value] = [bubbles[j+1].value, bubbles[j].value];
 				}
 			}
 		}
 	}
 
-	//анимируем пузыри
-	animateArray() {
+	//добавляем в очередь пузыри, которые в последствии будут меняться местами с заданной анимацией
+	addToAnimationQueue(firstBubble, secondBubble) {
+		animationQueue.push([firstBubble.node,secondBubble.node]);
+	}
+
+	animateArray(scene) {
+
 		if (animationQueue.length === 0) {
-			document.body.classList.remove('hide-overflow');
+			scene.showScroll();
 			return;
 		}
-		window.scrollTo({
-				top: animationQueue[0][0].offsetTop - document.documentElement.clientHeight/2,
-				behavior: "smooth"
-		});
-		setTimeout(() => {
 
+		scene.scrollToBubble();
+
+		setTimeout(() => {
 			animationQueue[0][0].classList.add('animate-first-bubble');
 			animationQueue[0][1].classList.add('animate-second-bubble');
 			setTimeout(() => {
@@ -144,7 +144,7 @@ class MainBubble {
 						animationQueue[0][1].classList.remove('animate-second-bubble');
 						animationQueue[0][1].classList.remove('hide-under');
 						animationQueue.splice(0, 1);
-						this.animateArray();
+						this.animateArray(scene);
 					},1050)
 				}, 150)
 			}, 900)
@@ -167,8 +167,7 @@ class Scene {
 		this.overlay = overlay;
 	}
 
-	//создаем всплывающие пузырьки в html
-	create() {
+	createLiveBG() {
 		for (let i = 1; i <= 11; i++) {
 			let bgBubble = document.createElement('div');
 			bgBubble.classList.add(`bg__bubble${i}`, `bubbles`);
@@ -176,15 +175,24 @@ class Scene {
 		}
 	}
 
-	//прячем за оверлеем сцену с будущим массивом пузырей
 	overlayHideArray() {
 		this.overlay.classList.add('overlay-array-only');
 	}
 
-	//прячем контейнер главным пузырем, показываем массив пузырей
 	overlayShowArray()  {
 		document.querySelector('.container-title').classList.add('hide');
 		this.overlay.classList.add('hide');
+	}
+
+	showScroll() {
+		document.body.classList.remove('hide-overflow');
+	}
+
+	scrollToBubble() {
+		window.scrollTo({
+				top: animationQueue[0][0].offsetTop - document.documentElement.clientHeight/2,
+				behavior: "smooth"
+		});
 	}
 }
 
@@ -195,7 +203,7 @@ function handler() {
 	// на последнем сообщении формируем массив
 	if (titleChat.num === titleChat.arrPhrases.length) {
 		document.removeEventListener('click', handler);
-		titleBubble.animateArray();
+		titleBubble.animateArray(scene);
 		scene.overlayShowArray();
 		return;
 	};
@@ -240,7 +248,7 @@ function handler() {
 
 const scene = new Scene('scene', document.querySelector('.bg'), document.querySelector('.overlay'))	//фон, оверлей и управление сценой
 const titleBubble = new MainBubble('titleBubble');													//главный титульный пузырек
-const titleChat = new Chat('titleChat');																//диалоговое окно главного пузырька
+const titleChat = new Chat('titleChat');															//диалоговое окно главного пузырька
 const bubbles = [];																					//массив для формирования пузырей
 const animationQueue = [];																			//массив очереди смены пузырей для анимации
 titleBubble.node = document.querySelector('.bubble__body');
@@ -261,7 +269,7 @@ const phrases = [
 
 titleChat.addPhrases(phrases);
 titleBubble.addEmotions(phrases);
-scene.create();
+scene.createLiveBG();
 scene.overlayHideArray();
 document.body.classList.add('hide-overflow');
 
