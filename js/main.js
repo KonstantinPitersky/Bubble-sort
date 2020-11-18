@@ -1,3 +1,4 @@
+
 'use strict'
 
 class Chat {
@@ -52,11 +53,9 @@ class Chat {
 			if (isNaN(num) || bubble.array.length < 2 || bubble.array.length >= 100) {
 				titleChat.num = 2;
 				return;
-			} else {
-				titleChat.num = 6;
-				break;
 			}
 		}
+		titleChat.num = 6;
 	}
 }
 
