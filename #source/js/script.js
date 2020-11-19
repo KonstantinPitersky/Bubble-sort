@@ -78,13 +78,13 @@ class MainBubble {
 		for (let i = 0; i < this.array.length; i++) {
 			let bubble = new Bubble(`bubble${i}`, this.array[i]);
 
-			this.visualizeBubble(bubble);
+			this._visualizeBubble(bubble);
 
 			bubbles.push(bubble);
 		}
 	}
 
-	visualizeBubble(bubble) {
+	_visualizeBubble(bubble) {
 		let bubleContainer = document.createElement('div');
 		let img = document.createElement('img');
 		let text = document.createElement('div');
@@ -109,7 +109,7 @@ class MainBubble {
 		for (let i = 0; i < bubbles.length - 1; i++) {
 			for (let j = 0; j < bubbles.length - 1 - i; j++) {
 				if (bubbles[j].value > bubbles[j+1].value) {
-					this.addToAnimationQueue(bubbles[j], bubbles[j+1]);
+					this._addToAnimationQueue(bubbles[j], bubbles[j+1]);
 					[bubbles[j].value, bubbles[j+1].value] = [bubbles[j+1].value, bubbles[j].value];
 				}
 			}
@@ -117,7 +117,7 @@ class MainBubble {
 	}
 
 	//добавляем в очередь пузыри, которые в последствии будут меняться местами с заданной анимацией
-	addToAnimationQueue(firstBubble, secondBubble) {
+	_addToAnimationQueue(firstBubble, secondBubble) {
 		animationQueue.push([firstBubble.node,secondBubble.node]);
 	}
 
