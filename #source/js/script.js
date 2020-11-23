@@ -61,7 +61,6 @@ function showArray() {
 	document.removeEventListener('click', phrases[titleChat.num].handler);
 	titleBubble.animateArray(scene);
 	scene.overlayShowArray();
-	document.querySelector('.reset').classList.remove('hide');
 }
 
 const scene = new Scene('scene', document.querySelector('.bg'), document.querySelector('.overlay'))		//фон, оверлей и управление сценой
