@@ -27,9 +27,9 @@ class Chat {
 			for (let i = 0; i < +value; i++) {
 				bubble.array.push(Math.floor(Math.random()*1001));
 			}
-			titleChat.num = 6;
+			this.num = 6;
 		} else {
-			titleChat.num = 4;
+			this.num = 4;
 		}
 	}
 
@@ -40,10 +40,10 @@ class Chat {
 			.map(item => Number(item));
 		for (let num of bubble.array) {
 			if (isNaN(num) || bubble.array.length < 2 || bubble.array.length >= 100) {
-				titleChat.num = 2;
+				this.num = 2;
 				return;
 			}
 		}
-		titleChat.num = 6;
+		this.num = 6;
 	}
 }
