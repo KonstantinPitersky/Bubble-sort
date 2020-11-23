@@ -1,23 +1,15 @@
 
-'use strict'
-
 class Chat {
 
-	constructor(name) {
-		this.name = name;					//имя чата
-		this.num = 0;						//каунтер для вывода сообщений
-		this.arrPhrases = [];				//массив чата с [[сообщениями][флажками для появления формы к сообщению]]
+	constructor(options) {
+		this.name = options.name;									//имя чата
+		this.num = 0;												//каунтер для вывода сообщений
+		this.node = document.querySelector(options.node);			//нода чата в DOM
+		this.textNode = document.querySelector(options.textNode);	//текстовая нода чата в DOM
 	}
 
-	say() {
-		this.textNode.textContent = this.arrPhrases[this.num][0];
-	}
-
-	//добавляем фразу и флажок формы из массива фраз в массив фраз чата
-	addPhrases(items) {
-		for (let item of items) {
-			this.arrPhrases.push([item[0], item[2]]);
-		}
+	say(phrases) {
+		this.textNode.textContent = phrases[this.num].text;
 	}
 
 	hideAllForms() {
@@ -56,23 +48,16 @@ class Chat {
 		titleChat.num = 6;
 	}
 }
-
 class MainBubble {
 
-	constructor(name) {
-		this.name = name;					//имя пузырька
-		this.arrEmotions = [];				//массив эмоций пузырька
-		this.array = [];					//массив значений, созданный на основе данных полученных от пользователя
+	constructor(options) {
+		this.name = options.name;									//имя пузырька
+		this.node = document.querySelector(options.node);			//элемент в DOM
+		this.array = [];											//массив значений, созданный на основе данных полученных от пользователя
 	}
 
-	addEmotions(items) {
-		for (let item of items) {
-			this.arrEmotions.push([item[1]]);
-		}
-	}
-
-	changeEmotion(num) {
-		this.node.children[0].src = `img/${this.arrEmotions[num]}.png`;
+	changeEmotion(num,phrases) {
+		this.node.children[0].src = `img/${phrases[num].emotion}.png`;
 	}
 
 	createArray() {
@@ -152,7 +137,6 @@ class MainBubble {
 		}, 500)
 	}
 }
-
 class Bubble {
 	constructor(name, value) {
 		this.name = name;
@@ -160,7 +144,6 @@ class Bubble {
 		this.node = document.createElement('div');
 	}
 }
-
 class Scene {
 	constructor(name, bg, overlay) {
 		this.name = name;
@@ -196,88 +179,71 @@ class Scene {
 		});
 	}
 }
+'use strict'
 
 function handler() {
 
 	titleChat.hideAllForms();
 
 	// на последнем сообщении формируем массив
-	if (titleChat.num === titleChat.arrPhrases.length) {
+	if (titleChat.num === phrases.length) {
 		document.removeEventListener('click', handler);
 		titleBubble.animateArray(scene);
 		scene.overlayShowArray();
 		return;
 	};
 
-	if (event.target.id === "amount-button" ) {
-		titleChat.autoArray(titleBubble);
-	}
-	if (event.target.id === "array-button") {
-		titleChat.manuallyArray(titleBubble);
-	}
-	if (event.target.id === 'auto') {
-		titleChat.num = 5;
-	};
-	if (event.target.id === 'manually') {
-		titleChat.num = 3;
-	};
-
 	//на последних двух сообщениях все выборы сделаны, приступаем к формированию массива
-	if ((titleChat.num + 2) === titleChat.arrPhrases.length) {
+	if ((titleChat.num + 2) === phrases.length) {
 		document.removeEventListener('click', handler);
-		titleChat.textNode.textContent = titleChat.arrPhrases[titleChat.num][0];
-		titleBubble.changeEmotion(titleChat.num);
+		titleChat.textNode.textContent = phrases[titleChat.num].text;
+		titleBubble.changeEmotion(titleChat.num, phrases);
 		setTimeout(() => {
 			titleBubble.createArray();
 			titleBubble.sortArray();
-			titleChat.textNode.textContent = titleChat.arrPhrases[titleChat.num][0];
-			titleBubble.changeEmotion(titleChat.num);
+			titleChat.textNode.textContent = phrases[titleChat.num].text;
+			titleBubble.changeEmotion(titleChat.num, phrases);
 			titleChat.num++;
 			document.addEventListener('click', handler);
 		}, 2000);
 	}
-	titleChat.say(titleBubble);
-	titleBubble.changeEmotion(titleChat.num);
+	titleChat.say(phrases);
+	titleBubble.changeEmotion(titleChat.num, phrases);
 
-	//выводим форму , если в массиве чата есть флажок с конкретной формой из HTML
-	if (titleChat.arrPhrases[titleChat.num][1]) {
-		titleChat.node.children[titleChat.arrPhrases[titleChat.num][1]].classList.remove('hide');
+	//выводим форму , если в массиве чата есть флажок с конкретной формой из DOM
+	if (phrases[titleChat.num].action) {
+		titleChat.node.children[phrases[titleChat.num].action].classList.remove('hide');
 		return;
 	}
 	titleChat.num++;
 }
 
-const scene = new Scene('scene', document.querySelector('.bg'), document.querySelector('.overlay'))	//фон, оверлей и управление сценой
-const titleBubble = new MainBubble('titleBubble');													//главный титульный пузырек
-const titleChat = new Chat('titleChat');															//диалоговое окно главного пузырька
-const bubbles = [];																					//массив для формирования пузырей
-const animationQueue = [];																			//массив очереди смены пузырей для анимации
-titleBubble.node = document.querySelector('.bubble__body');
-titleChat.node = document.querySelector('.chat-box__body');
-titleChat.textNode = document.querySelector('.chat-box__text');
+const scene = new Scene('scene', document.querySelector('.bg'), document.querySelector('.overlay'))		//фон, оверлей и управление сценой
+const titleBubble = new MainBubble({name:'titleBubble', node: '.bubble__body'});						//главный титульный пузырек
+const titleChat = new Chat({name:'titleChat', node:'.chat-box__body', textNode: '.chat-box__text'});	//диалоговое окно главного пузырька
+const bubbles = [];																						//массив для формирования пузырей
+const animationQueue = [];																				//массив очереди смены пузырей для анимации
 
 //массив [фраза, эмоция, флаг наличия определенной кнопки по номеру ноды в html]
 const phrases = [
-	['Привет! Добро пожаловать в пузырьковую сортировку','hi', null],
-	['Желаете сгенерировать числа автоматически или ввести вручную?','question', 1],
-	['Вы точно правильно ввели массив? Попробуйте снова!','question', null],
-	['Введите от 2 до 100 чисел. Например: 1, 3.44, 5, -10','hi', 2],
-	['Вы точно ввели целое число от 2 до 100? Попробуйте снова!','question', null],
-	['Сколько значений сгенерировать? (Целое число от 2 до 100)','question', 3],
-	['Идёт загрузка пузырьков...','meditation', null],
-	['Готово! Идем смотреть!','joy', null]
+	{text: 'Привет! Добро пожаловать в пузырьковую сортировку', emotion: 'hi', action: null},
+	{text: 'Желаете сгенерировать числа автоматически или ввести вручную?', emotion: 'question', action: 1},
+	{text: 'Вы точно правильно ввели массив? Попробуйте снова!', emotion: 'question', action: null},
+	{text: 'Введите от 2 до 100 чисел. Например: 1, 3.44, 5, -10', emotion: 'hi', action: 2},
+	{text: 'Вы точно ввели целое число от 2 до 100? Попробуйте снова!', emotion: 'question', action: null},
+	{text: 'Сколько значений сгенерировать? (Целое число от 2 до 100)', emotion: 'question', action: 3},
+	{text: 'Идёт загрузка пузырьков...', emotion: 'meditation', action: null},
+	{text: 'Готово! Идем смотреть!', emotion: 'joy', action: null}
 ];
 
-titleChat.addPhrases(phrases);
-titleBubble.addEmotions(phrases);
 scene.createLiveBG();
 scene.overlayHideArray();
 document.body.classList.add('hide-overflow');
 
 //выводим первое сообщение
 setTimeout(() => {
-	titleChat.say(titleBubble);
-	titleBubble.changeEmotion(titleChat.num);
+	titleChat.say(phrases);
+	titleBubble.changeEmotion(titleChat.num, phrases);
 	titleChat.num++;
 	setTimeout(() => {
 		document.addEventListener('click', handler);
