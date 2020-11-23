@@ -9,6 +9,7 @@ function handler() {
 		document.removeEventListener('click', handler);
 		titleBubble.animateArray(scene);
 		scene.overlayShowArray();
+		document.querySelector('.reset').classList.remove('hide');
 		return;
 	};
 
